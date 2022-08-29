@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.DmN'
+version properties.version
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.ow2.asm', name: 'asm', version: '9.3'
+    implementation group: 'org.ow2.asm', name: 'asm-tree', version: '9.3'
+    implementation files("inc/DmNBytecodeUtils-8.4.jar")
+    testImplementation group: 'org.apiguardian', name: 'apiguardian-api', version: '1.1.2'
+    testImplementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task generateConfig {
+    file("build/resources/test").mkdirs()
+    if (!file("build/resources/test/config.properties").exists()) {
+        file("build/resources/test/config.properties") << "version = ${version}"
+    }
+}
+
+tasks.matching { it.name == "build" }.all { Task task -> task.dependsOn generateConfig}
