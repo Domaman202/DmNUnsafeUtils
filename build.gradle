@@ -31,3 +31,6 @@ task generateConfig {
 }
 
 tasks.matching { it.name == "build" }.all { Task task -> task.dependsOn generateConfig}
+
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
