@@ -1,12 +1,7 @@
 package ru.DmN.uu;
 
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import ru.DmN.bpl.BytecodeUtils;
 import ru.DmN.bpl.CallBuilder;
-import ru.DmN.bpl.ClassProcessor;
 import ru.DmN.bpl.annotations.BytecodeProcessor;
-import ru.DmN.bpl.annotations.FMRename;
 import ru.DmN.uu.internal.MagicAccessor;
 
 import java.lang.invoke.*;
@@ -73,16 +68,10 @@ public class Unsafe {
             var field$IMPL_NAMES = MethodHandles.class.getDeclaredField("IMPL_NAMES");
             forceSetAccessible(field$IMPL_NAMES);
             MethodHandles$MethodHandles = field$IMPL_NAMES.get(null);
-//            var method$addExports0 = Module.class.getDeclaredMethod("addExports0", Module.class, String.class, Module.class);
-//            forceSetAccessible(method$addExports0);
-//            method$addExports0.invoke(null, Class.forName("java.lang.invoke.MemberName").getModule(), "")
-            var node = new ClassProcessor();
+            byte[] b;
             try (var stream = Unsafe.class.getClassLoader().getResourceAsStream("ru/DmN/uu/internal/MagicAccessor.class")) {
-                new ClassReader(stream.readAllBytes()).accept(node, 0);
+                b = stream.readAllBytes();
             }
-            ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-            node.accept(writer);
-            var b = writer.toByteArray();
             accessor = (Class<MagicAccessor>) lookup.in(Class.forName("jdk.internal.reflect.MagicAccessorImpl")).defineClass(b);
             var method$init = accessor.getMethod("init");
             forceSetAccessible(method$init);
