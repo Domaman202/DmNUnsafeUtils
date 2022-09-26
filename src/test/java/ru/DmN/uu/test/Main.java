@@ -58,6 +58,7 @@ public class Main {
                 node.accept(writer);
                 jar.write(writer.toByteArray());
             }
+            jar.closeEntry();
             //
             jar.putNextEntry(new JarEntry("META-INF/MANIFEST.MF"));
             jar.write(("Manifest-Version: 1.0\n").getBytes(StandardCharsets.UTF_8));
