@@ -3,6 +3,7 @@ open module ru.DmN.uu {
     requires jdk.unsupported;
     requires org.objectweb.asm;
     requires org.objectweb.asm.tree;
+    requires org.jetbrains.annotations;
 
     exports ru.DmN.uu;
     exports ru.DmN.uu.internal;

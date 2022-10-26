@@ -17,8 +17,11 @@ import java.lang.reflect.Field;
 public class MagicAccessor {
     public static final int MethodHandles$ALL = new FieldBuilder("java/lang/invoke/MethodHandles$Lookup", "ALL_MODES", "I").getI();
     public static final Object IMPL_NAMES = new FieldBuilder("java/lang/invoke/MethodHandles", "IMPL_NAMES", "Ljava/lang/invoke/MemberName$Factory;").getA();
+    public static final Object JavaLangAccess = new CallBuilder().invokeStatic("getJavaLangAccess", "()Ljdk/internal/access/JavaLangAccess;", "jdk/internal/access/SharedSecrets", false).endA();
+    public static final Object JavaLangInvokeAccess = new CallBuilder().invokeStatic("getJavaLangInvokeAccess", "()Ljdk/internal/access/JavaLangInvokeAccess;", "jdk/internal/access/SharedSecrets", false).endA();
 
-    public static void init() {
+
+    public static void init() throws NoSuchFieldException {
         new CallBuilder().arg(BytecodeUtils.ldc$class("jdk/internal/reflect/DmNMagicAccessor").getModule()).arg("jdk.internal.reflect").invokeStatic("addExportsToAllUnnamed0", "(Ljava/lang/Module;Ljava/lang/String;)V", "java/lang/Module", false).end();
     }
 
