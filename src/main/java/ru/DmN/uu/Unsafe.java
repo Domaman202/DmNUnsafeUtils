@@ -6,7 +6,6 @@ import ru.DmN.bpl.BytecodeUtils;
 import ru.DmN.bpl.CallBuilder;
 import ru.DmN.bpl.FieldBuilder;
 import ru.DmN.bpl.annotations.BytecodeProcessor;
-import ru.DmN.bpl.annotations.FMRename;
 import ru.DmN.uu.internal.MagicAccessor;
 
 import java.lang.invoke.*;
@@ -21,10 +20,32 @@ public class Unsafe {
     public static final Class<MagicAccessor> accessor;
     public static final MethodHandles.Lookup lookup;
     public static final Object MethodHandles$MethodHandles;
-    @FMRename(desc = "Ljdk/internal/access/JavaLangAccess;", sign = "Ljdk/internal/access/JavaLangAccess;")
-    public static Object JavaLangAccess;
-    @FMRename(desc = "Ljdk/internal/access/JavaLangInvokeAccess;", sign = "Ljdk/internal/access/JavaLangInvokeAccess;")
-    public static Object JavaLangInvokeAccess;
+
+    static {
+        try {
+            var field$unsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+            field$unsafe.setAccessible(true);
+            unsafe = (sun.misc.Unsafe) field$unsafe.get(null);
+            lookup = forceGetField(MethodHandles.Lookup.class, null, Modifier.STATIC | Modifier.FINAL, MethodHandles.Lookup.class);
+            var field$IMPL_NAMES = MethodHandles.class.getDeclaredField("IMPL_NAMES");
+            forceSetAccessible(field$IMPL_NAMES);
+            MethodHandles$MethodHandles = field$IMPL_NAMES.get(null);
+            byte[] b;
+            try (var stream = Unsafe.class.getClassLoader().getResourceAsStream("ru/DmN/uu/internal/MagicAccessor.class")) {
+                b = stream.readAllBytes();
+            }
+            accessor = (Class<MagicAccessor>) lookup.in(Class.forName("jdk.internal.reflect.MagicAccessorImpl")).defineClass(b);
+            var method$init = accessor.getMethod("init");
+            forceSetAccessible(method$init);
+            method$init.invoke(null);
+        } catch (Throwable t) {
+            BytecodeUtils.athrow(t);
+            throw new Error();
+        }
+    }
+
+    public static Object JavaLangAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangAccess", "Ljava/lang/Object;").getA();
+    public static Object JavaLangInvokeAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangInvokeAccess", "Ljava/lang/Object;").getA();
 
     public static Object createMemberName(Class<?> refc, String name, MethodType type, byte refKind) {
         return new CallBuilder().arg(refc).arg(name).arg(type).arg(refKind).invokeDynamic("createMemberName", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;B)Ljava/lang/Object;", "ru/DmN/uu/Unsafe", "bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
@@ -81,32 +102,5 @@ public class Unsafe {
 
     public static @NotNull CallSite bootstrap(@NotNull MethodHandles.Lookup caller, @NotNull String name, @NotNull MethodType type) throws Exception {
         return new ConstantCallSite(lookup.findStatic(accessor, name, type));
-    }
-
-    static {
-        try {
-            var field$unsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-            field$unsafe.setAccessible(true);
-            unsafe = (sun.misc.Unsafe) field$unsafe.get(null);
-            lookup = forceGetField(MethodHandles.Lookup.class, null, Modifier.STATIC | Modifier.FINAL, MethodHandles.Lookup.class);
-            var field$IMPL_NAMES = MethodHandles.class.getDeclaredField("IMPL_NAMES");
-            forceSetAccessible(field$IMPL_NAMES);
-            MethodHandles$MethodHandles = field$IMPL_NAMES.get(null);
-            byte[] b;
-            try (var stream = Unsafe.class.getClassLoader().getResourceAsStream("ru/DmN/uu/internal/MagicAccessor.class")) {
-                b = stream.readAllBytes();
-            }
-            accessor = (Class<MagicAccessor>) lookup.in(Class.forName("jdk.internal.reflect.MagicAccessorImpl")).defineClass(b);
-            var method$init = accessor.getMethod("init");
-            forceSetAccessible(method$init);
-            method$init.invoke(null);
-            var jla = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangAccess", "Ljava/lang/Object;").getA();
-            new FieldBuilder("ru/DmN/uu/Unsafe", "JavaLangAccess", "Ljdk/internal/access/JavaLangAccess;").set(jla);
-            var jlia = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangInvokeAccess", "Ljava/lang/Object;").getA();
-            new FieldBuilder("ru/DmN/uu/Unsafe", "JavaLangInvokeAccess", "Ljdk/internal/access/JavaLangInvokeAccess;").set(jlia);
-        } catch (Throwable t) {
-            BytecodeUtils.athrow(t);
-            throw new Error();
-        }
     }
 }

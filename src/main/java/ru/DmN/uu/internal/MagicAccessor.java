@@ -21,7 +21,7 @@ public class MagicAccessor {
     public static final Object JavaLangInvokeAccess = new CallBuilder().invokeStatic("getJavaLangInvokeAccess", "()Ljdk/internal/access/JavaLangInvokeAccess;", "jdk/internal/access/SharedSecrets", false).endA();
 
 
-    public static void init() throws NoSuchFieldException {
+    public static void init() {
         new CallBuilder().arg(BytecodeUtils.ldc$class("jdk/internal/reflect/DmNMagicAccessor").getModule()).arg("jdk.internal.reflect").invokeStatic("addExportsToAllUnnamed0", "(Ljava/lang/Module;Ljava/lang/String;)V", "java/lang/Module", false).end();
     }
 
