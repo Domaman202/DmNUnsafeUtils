@@ -48,15 +48,15 @@ public class Unsafe {
     public static Object JavaLangInvokeAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangInvokeAccess", "Ljava/lang/Object;").getA();
 
     public static Object createMemberName(Class<?> refc, String name, MethodType type, byte refKind) {
-        return new CallBuilder().arg(refc).arg(name).arg(type).arg(refKind).invokeDynamic("createMemberName", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;B)Ljava/lang/Object;", "ru/DmN/uu/Unsafe", "bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
+        return new CallBuilder("createMemberName", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;B)Ljava/lang/Object;", "ru/DmN/uu/Unsafe").arg(refc).arg(name).arg(type).arg(refKind).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
     }
 
     public static Object resolveOrFail(byte refKind, Object member, Class<?> clazz) {
-        return new CallBuilder().arg(refKind).arg(member).arg(clazz).invokeDynamic("resolveOrFail", "(BLjava/lang/Object;Ljava/lang/Class;)Ljava/lang/Object;", "ru/DmN/uu/Unsafe", "bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
+        return new CallBuilder("resolveOrFail", "(BLjava/lang/Object;Ljava/lang/Class;)Ljava/lang/Object;", "ru/DmN/uu/Unsafe").arg(refKind).arg(member).arg(clazz).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
     }
 
     public static Object resolve(byte refKind, Object ref, Class<?> lookupClass, int allowedModes, boolean speculativeResolve) {
-        return new CallBuilder().arg(refKind).arg(ref).arg(lookupClass).arg(allowedModes).arg(speculativeResolve).invokeDynamic("resolve", "(BLjava/lang/Object;Ljava/lang/Class;IZ)Ljava/lang/Object;", "ru/DmN/uu/Unsafe", "bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
+        return new CallBuilder("resolve", "(BLjava/lang/Object;Ljava/lang/Class;IZ)Ljava/lang/Object;", "ru/DmN/uu/Unsafe").arg(refKind).arg(ref).arg(lookupClass).arg(allowedModes).arg(speculativeResolve).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
     }
 
     public static void forceSetAccessible(@NotNull AccessibleObject object) {
@@ -64,7 +64,7 @@ public class Unsafe {
     }
 
     public static @NotNull VarHandle unreflect(@NotNull Field field) {
-        return (VarHandle) new CallBuilder().arg(field).invokeDynamic("unreflect", "(Ljava/lang/reflect/Field;)Ljava/lang/invoke/VarHandle;", "ru/DmN/uu/Unsafe", "bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
+        return (VarHandle) new CallBuilder("unreflect", "(Ljava/lang/reflect/Field;)Ljava/lang/invoke/VarHandle;", "ru/DmN/uu/Unsafe").arg(field).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
     }
 
     public static <O, T> T forceGetField(@NotNull Class<O> owner, @Nullable O instance, int mods, @NotNull Class<T> type) {
@@ -85,19 +85,19 @@ public class Unsafe {
     }
 
     public static Object unsafeInvoke(@NotNull MethodHandle mh, Object... args) {
-        return new CallBuilder().arg(mh).arg(args).invokeVirtual("invoke", "([Ljava/lang/Object;)Ljava/lang/Object;", "java/lang/invoke/MethodHandle").endA();
+        return new CallBuilder("invoke", "([Ljava/lang/Object;)Ljava/lang/Object;", "java/lang/invoke/MethodHandle").arg(mh).arg(args).invokeVirtual().endA();
     }
 
     public static Object unsafeInvokeExact(@NotNull MethodHandle mh, Object... args) {
-        return new CallBuilder().arg(mh).arg(args).invokeVirtual("invokeExact", "([Ljava/lang/Object;)Ljava/lang/Object;", "java/lang/invoke/MethodHandle").endA();
+        return new CallBuilder("invokeExact", "([Ljava/lang/Object;)Ljava/lang/Object;", "java/lang/invoke/MethodHandle").arg(mh).arg(args).invokeVirtual().endA();
     }
 
     public static Object unsafeInvokeWithArguments(@NotNull MethodHandle mh, Object... args) {
-        return new CallBuilder().arg(mh).arg(args).invokeVirtual("invokeWithArguments", "([Ljava/lang/Object;)Ljava/lang/Object;", "java/lang/invoke/MethodHandle").endA();
+        return new CallBuilder("invokeWithArguments", "([Ljava/lang/Object;)Ljava/lang/Object;", "java/lang/invoke/MethodHandle").arg(mh).arg(args).invokeVirtual().endA();
     }
 
     public static Object unsafeInvokeWithArguments(@NotNull MethodHandle mh, @NotNull List<?> args) {
-        return new CallBuilder().arg(mh).arg(args).invokeVirtual("invokeWithArguments", "(Ljava/util/List;)Ljava/lang/Object;", "java/lang/invoke/MethodHandle").endA();
+        return new CallBuilder("invokeWithArguments", "(Ljava/util/List;)Ljava/lang/Object;", "java/lang/invoke/MethodHandle").arg(mh).arg(args).invokeVirtual().endA();
     }
 
     public static @NotNull CallSite bootstrap(@NotNull MethodHandles.Lookup caller, @NotNull String name, @NotNull MethodType type) throws Exception {
