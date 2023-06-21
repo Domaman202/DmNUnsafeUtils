@@ -5,7 +5,9 @@ import ru.DmN.bpl.CallBuilder;
 import ru.DmN.bpl.FieldBuilder;
 import ru.DmN.bpl.annotations.BytecodeProcessor;
 import ru.DmN.bpl.annotations.Extends;
+import ru.DmN.bpl.annotations.FMRename;
 import ru.DmN.bpl.annotations.TRename;
+import sun.misc.Unsafe;
 
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
@@ -19,7 +21,7 @@ public class MagicAccessor {
     public static final Object IMPL_NAMES = new FieldBuilder("java/lang/invoke/MethodHandles", "IMPL_NAMES", "Ljava/lang/invoke/MemberName$Factory;").getA();
     public static final Object JavaLangAccess = new CallBuilder("getJavaLangAccess", "()Ljdk/internal/access/JavaLangAccess;", "jdk/internal/access/SharedSecrets").invokeStatic(false).endA();
     public static final Object JavaLangInvokeAccess = new CallBuilder("getJavaLangInvokeAccess", "()Ljdk/internal/access/JavaLangInvokeAccess;", "jdk/internal/access/SharedSecrets").invokeStatic(false).endA();
-
+    public static final sun.misc.Unsafe unsafe = (Unsafe) new FieldBuilder("sun/misc/Unsafe", "theUnsafe", "Lsun/misc/Unsafe;").getA();
 
     public static void init() {
         new CallBuilder("addExportsToAllUnnamed0", "(Ljava/lang/Module;Ljava/lang/String;)V", "java/lang/Module").arg(BytecodeUtils.ldc$class("jdk/internal/reflect/DmNMagicAccessor").getModule()).arg("jdk.internal.reflect").invokeStatic(false).end();
@@ -44,5 +46,9 @@ public class MagicAccessor {
 
     public static VarHandle unreflect(Field field) {
         return makeFieldHandle(field, field.getDeclaringClass(), field.getType());
+    }
+
+    public static void setClassLoader(Class<?> clazz, ClassLoader loader) {
+        unsafe.putObject(clazz, 52, loader);
     }
 }

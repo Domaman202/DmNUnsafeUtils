@@ -40,12 +40,12 @@ public class Unsafe {
             method$init.invoke(null);
         } catch (Throwable t) {
             BytecodeUtils.athrow(t);
-            throw new Error();
+            throw new Error("Необработанная вставка");
         }
     }
 
-    public static Object JavaLangAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangAccess", "Ljava/lang/Object;").getA();
-    public static Object JavaLangInvokeAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangInvokeAccess", "Ljava/lang/Object;").getA();
+    public final static Object JavaLangAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangAccess", "Ljava/lang/Object;").getA();
+    public final static Object JavaLangInvokeAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangInvokeAccess", "Ljava/lang/Object;").getA();
 
     public static Object createMemberName(Class<?> refc, String name, MethodType type, byte refKind) {
         return new CallBuilder("createMemberName", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;B)Ljava/lang/Object;", "ru/DmN/uu/Unsafe").arg(refc).arg(name).arg(type).arg(refKind).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
@@ -65,6 +65,10 @@ public class Unsafe {
 
     public static @NotNull VarHandle unreflect(@NotNull Field field) {
         return (VarHandle) new CallBuilder("unreflect", "(Ljava/lang/reflect/Field;)Ljava/lang/invoke/VarHandle;", "ru/DmN/uu/Unsafe").arg(field).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
+    }
+
+    public static void setClassLoader(Class<?> clazz, ClassLoader loader) {
+        new CallBuilder("setClassLoader", "(Ljava/lang/Class;Ljava/lang/ClassLoader;)V", "ru/DmN/uu/Unsafe").arg(clazz).arg(loader).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").end();
     }
 
     public static <O, T> T forceGetField(@NotNull Class<O> owner, @Nullable O instance, int mods, @NotNull Class<T> type) {
