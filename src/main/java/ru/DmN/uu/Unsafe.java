@@ -68,7 +68,11 @@ public class Unsafe {
     }
 
     public static void setClassLoader(Class<?> clazz, ClassLoader loader) {
-        new CallBuilder("setClassLoader", "(Ljava/lang/Class;Ljava/lang/ClassLoader;)V", "ru/DmN/uu/Unsafe").arg(clazz).arg(loader).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").end();
+        unsafe.putObject(clazz, 52, loader);
+    }
+
+    public static void addExportsToAllUnnamed0(Module module, String pkg) {
+        new CallBuilder("addExportsToAllUnnamed0", "(Ljava/lang/Module;Ljava/lang/String;)V", "ru/DmN/uu/Unsafe").arg(module).arg(pkg).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").end();
     }
 
     public static <O, T> T forceGetField(@NotNull Class<O> owner, @Nullable O instance, int mods, @NotNull Class<T> type) {

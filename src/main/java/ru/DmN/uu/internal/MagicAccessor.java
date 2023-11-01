@@ -5,13 +5,14 @@ import ru.DmN.bpl.CallBuilder;
 import ru.DmN.bpl.FieldBuilder;
 import ru.DmN.bpl.annotations.BytecodeProcessor;
 import ru.DmN.bpl.annotations.Extends;
-import ru.DmN.bpl.annotations.FMRename;
 import ru.DmN.bpl.annotations.TRename;
 import sun.misc.Unsafe;
 
+import java.io.IOException;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
+import java.nio.channels.FileChannel;
 
 @BytecodeProcessor
 @Extends(extend = "jdk/internal/reflect/MagicAccessorImpl")
@@ -48,7 +49,15 @@ public class MagicAccessor {
         return makeFieldHandle(field, field.getDeclaringClass(), field.getType());
     }
 
-    public static void setClassLoader(Class<?> clazz, ClassLoader loader) {
-        unsafe.putObject(clazz, 52, loader);
+    public static void addExportsToAllUnnamed0(Module module, String pkg) {
+        new CallBuilder("addExportsToAllUnnamed0", "(Ljava/lang/Module;Ljava/lang/String;)V", "java/lang/Module").arg(module).arg(pkg).invokeStatic(false).end();
+    }
+
+    public static long map0(FileChannel channel, int prot, long position, long length, boolean isSync) {
+        return new CallBuilder("map0", "(IJJZ)J", "sun/nio/ch/FileChannelImpl").arg(channel).arg(prot).arg(position).arg(length).arg(isSync).invokeVirtual().endL();
+    }
+
+    public static int unmap0(long address, long length) {
+        return new CallBuilder("unmap0", "(LL)I", "sun/nio/ch/FileChannelImpl").arg(address).arg(length).invokeStatic(false).endI();
     }
 }
