@@ -8,7 +8,8 @@ import ru.DmN.bpl.annotations.Extends;
 import ru.DmN.bpl.annotations.TRename;
 import sun.misc.Unsafe;
 
-import java.io.IOException;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
@@ -18,6 +19,7 @@ import java.nio.channels.FileChannel;
 @Extends(extend = "jdk/internal/reflect/MagicAccessorImpl")
 @TRename("jdk/internal/reflect/DmNMagicAccessor")
 public class MagicAccessor {
+    public static final MethodHandles.Lookup lookup = (MethodHandles.Lookup) new FieldBuilder("java/lang/invoke/MethodHandles$Lookup", "IMPL_LOOKUP", "Ljava/lang/invoke/MethodHandles$Lookup;").getA();
     public static final int MethodHandles$ALL = new FieldBuilder("java/lang/invoke/MethodHandles$Lookup", "ALL_MODES", "I").getI();
     public static final Object IMPL_NAMES = new FieldBuilder("java/lang/invoke/MethodHandles", "IMPL_NAMES", "Ljava/lang/invoke/MemberName$Factory;").getA();
     public static final Object JavaLangAccess = new CallBuilder("getJavaLangAccess", "()Ljdk/internal/access/JavaLangAccess;", "jdk/internal/access/SharedSecrets").invokeStatic(false).endA();
@@ -28,8 +30,20 @@ public class MagicAccessor {
         new CallBuilder("addExportsToAllUnnamed0", "(Ljava/lang/Module;Ljava/lang/String;)V", "java/lang/Module").arg(BytecodeUtils.ldc$class("jdk/internal/reflect/DmNMagicAccessor").getModule()).arg("jdk.internal.reflect").invokeStatic(false).end();
     }
 
+    public static MethodHandle make(Object memberName) {
+        return (MethodHandle) new CallBuilder("make", "(Ljava/lang/invoke/MemberName;)Ljava/lang/invoke/DirectMethodHandle;", "java/lang/invoke/DirectMethodHandle").arg(lookup).arg(memberName).invokeStatic(false).endA();
+    }
+
+    public static boolean isResolved(Object memberName) {
+        return new CallBuilder("isResolved", "()Z", "java/lang/invoke/MemberName").arg(memberName).invokeVirtual().endZ();
+    }
+
     public static Object createMemberName(Class<?> refc, String name, MethodType type, byte refKind) {
         return new CallBuilder("<init>", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;B)V", "java/lang/invoke/MemberName").alloc().arg(refc).arg(name).arg(type).arg(refKind).invokeSpecial(false).endA();
+    }
+
+    public static Object resolveOrFail(byte refKind, Class<?> refc, String name, Class<?> type) {
+        return new CallBuilder("resolveOrFail", "(BLjava/lang/Class;Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/invoke/MemberName;", "java/lang/invoke/MethodHandles$Lookup").arg(lookup).arg(refKind).arg(refc).arg(name).arg(type).invokeVirtual().endA();
     }
 
     public static Object resolveOrFail(byte refKind, Object member, Class<?> clazz) {

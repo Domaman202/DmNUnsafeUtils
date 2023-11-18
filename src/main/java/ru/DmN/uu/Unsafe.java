@@ -47,8 +47,20 @@ public class Unsafe {
     public final static Object JavaLangAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangAccess", "Ljava/lang/Object;").getA();
     public final static Object JavaLangInvokeAccess = new FieldBuilder("jdk/internal/reflect/DmNMagicAccessor", "JavaLangInvokeAccess", "Ljava/lang/Object;").getA();
 
+    public static MethodHandle make(Object memberName) {
+        return (MethodHandle) new CallBuilder("make", "(Ljava/lang/Object;)Ljava/lang/invoke/MethodHandle;", "ru/DmN/uu/Unsafe").arg(memberName).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
+    }
+
+    public static boolean isResolved(Object memberName) {
+        return new CallBuilder("isResolved", "(Ljava/lang/Object;)Z", "ru/DmN/uu/Unsafe").arg(memberName).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endZ();
+    }
+
     public static Object createMemberName(Class<?> refc, String name, MethodType type, byte refKind) {
         return new CallBuilder("createMemberName", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;B)Ljava/lang/Object;", "ru/DmN/uu/Unsafe").arg(refc).arg(name).arg(type).arg(refKind).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
+    }
+
+    public static Object resolveOrFail(byte refKind, Class<?> refc, String name, Class<?> type) {
+        return new CallBuilder("resolveOrFail", "(BLjava/lang/Class;Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/Object;", "ru/DmN/uu/Unsafe").arg(refKind).arg(refc).arg(name).arg(type).invokeDynamic("bootstrap", "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/CallSite;").endA();
     }
 
     public static Object resolveOrFail(byte refKind, Object member, Class<?> clazz) {
